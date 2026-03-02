@@ -1,4 +1,5 @@
 ﻿const { Client, LocalAuth } = require('whatsapp-web.js');
+const http = require('http');
 
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -8,13 +9,17 @@ const client = new Client({
     }
 });
 
+// Esto mantiene vivo el bot en Railway
+http.createServer((req, res) => {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('El Parce esta vivo');
+}).listen(process.env.PORT || 8080);
+
 client.on('qr', () => {
-    console.log('--- GENERANDO CÓDIGO DE VINCULACIÓN... ---');
+    console.log('--- GENERANDO CÓDIGO... ---');
 });
 
-client.on('ready', () => {
-    console.log('¡BOT VINCULADO EXITOSAMENTE!');
-});
+client.on('ready', () => console.log('¡BOT VINCULADO!'));
 
 async function iniciar() {
     console.log('Iniciando sistema...');
@@ -25,10 +30,10 @@ async function iniciar() {
             console.log('SOLICITANDO CÓDIGO A WHATSAPP...');
             const code = await client.requestPairingCode('573042755395');
             console.log('\n=========================================');
-            console.log('CÓDIGO DE VINCULACIÓN: ' + code);
+            console.log('TU CÓDIGO ES: ' + code);
             console.log('=========================================\n');
-        } catch (e) {
-            console.log('Error o ya estás vinculado.');
+        } catch (e) { 
+            console.log('Error al pedir código:', e.message); 
         }
     }, 5000);
 }
