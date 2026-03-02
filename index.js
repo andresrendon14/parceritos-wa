@@ -1,5 +1,4 @@
 ﻿const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
 
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -9,37 +8,29 @@ const client = new Client({
     }
 });
 
-client.on('qr', (qr) => {
-    console.log('GENERANDO QR (Si no lo puedes leer, espera el código abajo)...');
-    qrcode.generate(qr, { small: true });
+client.on('qr', () => {
+    console.log('--- GENERANDO CÓDIGO DE VINCULACIÓN... ---');
 });
 
 client.on('ready', () => {
-    console.log('-----------------------------------------');
-    console.log('¡EL PARCE ESTÁ VIVO Y CONECTADO! 🚀');
-    console.log('-----------------------------------------');
-});
-
-client.on('message', async (message) => {
-    if (message.body.toLowerCase() === 'hola') {
-        await message.reply('¡Habla pues parce! ¿En qué le puedo colaborar? 🇨🇴');
-    }
+    console.log('¡BOT VINCULADO EXITOSAMENTE!');
 });
 
 async function iniciar() {
+    console.log('Iniciando sistema...');
     await client.initialize();
+    
     setTimeout(async () => {
         try {
-            console.log('SOLICITANDO CÓDIGO DE VINCULACIÓN...');
+            console.log('SOLICITANDO CÓDIGO A WHATSAPP...');
             const code = await client.requestPairingCode('573042755395');
-            console.log('\n*****************************************');
-            console.log('TU CÓDIGO DE VINCULACIÓN ES:');
-            console.log('>>>>  ' + code + '  <<<<');
-            console.log('*****************************************\n');
-        } catch (err) {
-            console.log('Error o ya vinculado.');
+            console.log('\n=========================================');
+            console.log('CÓDIGO DE VINCULACIÓN: ' + code);
+            console.log('=========================================\n');
+        } catch (e) {
+            console.log('Error o ya estás vinculado.');
         }
-    }, 10000);
+    }, 5000);
 }
 
 iniciar();
