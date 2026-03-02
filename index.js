@@ -1,37 +1,35 @@
-﻿const { Client } = require('whatsapp-web.js'); // Sin LocalAuth para limpiar todo
+﻿const { Client } = require('whatsapp-web.js');
 const http = require('http');
 
-// Servidor para engañar a Railway
+// Mantiene el bot encendido en Railway
 http.createServer((req, res) => {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Limpiando Sesion...');
+    res.end('Servidor Activo');
 }).listen(process.env.PORT || 8080);
 
 const client = new Client({
     puppeteer: {
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-extensions']
     }
 });
 
-client.on('ready', () => console.log('¡BOT VINCULADO!'));
+// LA SOLUCIÓN: Solo pedimos el código cuando WhatsApp nos avisa que ya cargó la página
+client.on('qr', async () => {
+    console.log('--- WHATSAPP CARGADO. PIDIENDO CÓDIGO... ---');
+    try {
+        const code = await client.requestPairingCode('573042755395');
+        console.log('\n=========================================');
+        console.log('>>> CÓDIGO DEFINITIVO: ' + code + ' <<<');
+        console.log('=========================================\n');
+    } catch (err) {
+        console.log('Error al generar código:', err.message);
+    }
+});
 
-async function iniciar() {
-    console.log('--- FORZANDO NUEVA VINCULACION ---');
-    await client.initialize();
-    
-    setTimeout(async () => {
-        try {
-            console.log('SOLICITANDO CODIGO FRESCO...');
-            const code = await client.requestPairingCode('573042755395');
-            console.log('\n*****************************************');
-            console.log('NUEVO CODIGO: ' + code);
-            console.log('NUEVO CODIGO: ' + code);
-            console.log('*****************************************\n');
-        } catch (e) {
-            console.log('Error critico:', e.message);
-        }
-    }, 10000);
-}
+client.on('ready', () => {
+    console.log('¡EL PARCE ESTÁ CONECTADO Y LISTO!');
+});
 
-iniciar();
+console.log('Iniciando navegador web oculto... (Paciencia, esto puede tomar unos 30 a 60 segundos)');
+client.initialize();
