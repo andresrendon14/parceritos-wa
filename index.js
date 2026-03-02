@@ -1,40 +1,37 @@
-﻿const { Client, LocalAuth } = require('whatsapp-web.js');
+﻿const { Client } = require('whatsapp-web.js'); // Sin LocalAuth para limpiar todo
 const http = require('http');
 
-// Servidor para que Railway no apague el bot
+// Servidor para engañar a Railway
 http.createServer((req, res) => {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Bot Parceritos Online');
+    res.end('Limpiando Sesion...');
 }).listen(process.env.PORT || 8080);
 
 const client = new Client({
-    authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
 
-client.on('ready', () => console.log('¡BOT VINCULADO CON ÉXITO!'));
+client.on('ready', () => console.log('¡BOT VINCULADO!'));
 
 async function iniciar() {
-    console.log('--- ARRANCANDO SISTEMA ---');
+    console.log('--- FORZANDO NUEVA VINCULACION ---');
     await client.initialize();
     
-    // Esperamos 8 segundos y pedimos el código
     setTimeout(async () => {
         try {
-            console.log('GENERANDO CÓDIGO DE VINCULACIÓN...');
+            console.log('SOLICITANDO CODIGO FRESCO...');
             const code = await client.requestPairingCode('573042755395');
             console.log('\n*****************************************');
-            console.log('TU CÓDIGO ES: ' + code);
-            console.log('TU CÓDIGO ES: ' + code);
-            console.log('TU CÓDIGO ES: ' + code);
+            console.log('NUEVO CODIGO: ' + code);
+            console.log('NUEVO CODIGO: ' + code);
             console.log('*****************************************\n');
         } catch (e) {
-            console.log('Error: Revisa si ya estás conectado.');
+            console.log('Error critico:', e.message);
         }
-    }, 8000);
+    }, 10000);
 }
 
 iniciar();
