@@ -1,10 +1,10 @@
 ﻿const { Client, LocalAuth } = require('whatsapp-web.js');
 const http = require('http');
 
-// Mantiene el contenedor encendido
+// Servidor para que Railway no apague el bot
 http.createServer((req, res) => {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Sistema Parceritos Operativo');
+    res.end('Bot Parceritos Online');
 }).listen(process.env.PORT || 8080);
 
 const client = new Client({
@@ -15,28 +15,26 @@ const client = new Client({
     }
 });
 
-// Quitamos el QR para que no ensucie la pantalla
-client.on('qr', () => {
-    console.log('--- SISTEMA LISTO: GENERANDO TU NÚMERO... ---');
-});
-
-client.on('ready', () => console.log('¡BOT CONECTADO CON ÉXITO!'));
+client.on('ready', () => console.log('¡BOT VINCULADO CON ÉXITO!'));
 
 async function iniciar() {
-    console.log('Iniciando procesos de Los Parceritos...');
+    console.log('--- ARRANCANDO SISTEMA ---');
     await client.initialize();
     
-    // Espera de seguridad para generar el código
+    // Esperamos 8 segundos y pedimos el código
     setTimeout(async () => {
         try {
+            console.log('GENERANDO CÓDIGO DE VINCULACIÓN...');
             const code = await client.requestPairingCode('573042755395');
-            console.log('\n=========================================');
-            console.log('TU CÓDIGO DE VINCULACIÓN ES: ' + code);
-            console.log('=========================================\n');
+            console.log('\n*****************************************');
+            console.log('TU CÓDIGO ES: ' + code);
+            console.log('TU CÓDIGO ES: ' + code);
+            console.log('TU CÓDIGO ES: ' + code);
+            console.log('*****************************************\n');
         } catch (e) {
-            console.log('Estado: El bot ya podría estar vinculado.');
+            console.log('Error: Revisa si ya estás conectado.');
         }
-    }, 10000);
+    }, 8000);
 }
 
 iniciar();
